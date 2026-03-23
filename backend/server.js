@@ -8,7 +8,9 @@ app.use(cors());
 app.use(express.json());
 
 // 📊 DASHBOARD DATA
-app.get("/api/dashboard", (req, res) => {
+app.get("/", (req, res) => {
+  res.send("🚀 Cargo API Running");
+});
 
   const sqlTotal = "SELECT COUNT(*) AS total FROM shipments";
   const sqlDelivered = "SELECT COUNT(*) AS delivered FROM shipments WHERE status = 'DELIVERED'";
