@@ -8,9 +8,13 @@ app.use(cors());
 app.use(express.json());
 
 // 📊 DASHBOARD DATA
+// ROOT
 app.get("/", (req, res) => {
   res.send("🚀 Cargo API Running");
 });
+
+// DASHBOARD API
+app.get("/api/dashboard", (req, res) => {
 
   const sqlTotal = "SELECT COUNT(*) AS total FROM shipments";
   const sqlDelivered = "SELECT COUNT(*) AS delivered FROM shipments WHERE status = 'DELIVERED'";
@@ -33,7 +37,6 @@ app.get("/", (req, res) => {
       });
     });
   });
-
 });
 // DATABASE CONNECTION
 const mysql = require("mysql2");
