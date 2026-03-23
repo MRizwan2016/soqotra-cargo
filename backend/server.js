@@ -1,6 +1,7 @@
 // IMPORT PACKAGES
 const express = require("express");
 const cors = require("cors");
+const path = require("path");
 
 // CREATE APP
 const app = express();
