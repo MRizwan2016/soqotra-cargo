@@ -10,9 +10,6 @@ app.use(express.json());
 
 // 📊 DASHBOARD DATA
 // ROOT
-app.get("/", (req, res) => {
-  res.send("🚀 Cargo API Running");
-});
 // Serve frontend folder
 app.use(express.static(path.join(__dirname, "../frontend")));
 
