@@ -13,7 +13,13 @@ app.use(express.json());
 app.get("/", (req, res) => {
   res.send("🚀 Cargo API Running");
 });
+// Serve frontend folder
+app.use(express.static(path.join(__dirname, "../frontend")));
 
+// Load index.html on root
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/index.html"));
+});
 // DASHBOARD API
 app.get("/api/dashboard", (req, res) => {
 
