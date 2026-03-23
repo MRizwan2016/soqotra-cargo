@@ -38,6 +38,21 @@ app.get("/api/dashboard", (req, res) => {
     });
   });
 });
+app.get("/api/track/:trackingNumber", (req, res) => {
+  const trackingNumber = req.params.trackingNumber;
+
+  const sql = "SELECT * FROM shipments WHERE tracking_number = ?";
+
+  db.query(sql, [trackingNumber], (err, result) => {
+    if (err) return res.status(500).send(err);
+
+    if (result.length === 0) {
+      return res.status(404).json({ message: "Tracking not found" });
+    }
+
+    res.json(result[0]);
+  });
+});
 // DATABASE CONNECTION
 const mysql = require("mysql2");
 
