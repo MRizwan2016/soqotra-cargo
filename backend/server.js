@@ -35,12 +35,16 @@ app.get("/api/dashboard", (req, res) => {
 
 });
 // DATABASE CONNECTION
-const db = mysql.createConnection({
-  host: "localhost",
-  user: "root",
-  password: "",
-  database: "soqotra_cargo",
-  port: 3307
+const mysql = require("mysql2");
+
+const db = mysql.createConnection(process.env.DATABASE_URL);
+
+db.connect(err => {
+  if (err) {
+    console.error("DB Connection Error:", err);
+  } else {
+    console.log("Connected to MySQL ✅");
+  }
 });
 
 // CONNECT DB
