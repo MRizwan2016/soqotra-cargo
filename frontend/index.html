@@ -1,1 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>SOQOTRA Cargo Tracking</title>
 
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #0f172a, #1e293b);
+      color: white;
+      text-align: center;
+      padding: 50px;
+    }
+
+    h1 {
+      margin-bottom: 30px;
+    }
+
+    input {
+      padding: 12px;
+      width: 250px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+      font-size: 16px;
+    }
+
+    button {
+      padding: 12px 20px;
+      margin-left: 10px;
+      background: #22c55e;
+      border: none;
+      color: white;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    button:hover {
+      background: #16a34a;
+    }
+
+    .result {
+      margin-top: 40px;
+      background: #1e293b;
+      padding: 25px;
+      border-radius: 10px;
+      width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+      text-align: left;
+    }
+
+    .result h3 {
+      text-align: center;
+    }
+
+    .error {
+      color: red;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>📦 SOQOTRA CARGO TRACKING</h1>
+
+  <input type="text" id="tracking" placeholder="Enter Tracking Number">
+  <button onclick="track()">Track</button>
+
+  <div id="result"></div>
+
+  <script>
+    function track() {
+      const tracking = document.getElementById("tracking").value.trim();
+
+      if (!tracking) {
+        document.getElementById("result").innerHTML = "<p class='error'>Please enter tracking number</p>";
+        return;
+      }
+
+      fetch(`https://soqotra-cargo.onrender.com/api/track/${tracking}`)
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Not Found");
+          }
+          return response.json();
+        })
+        .then(data => {
+          document.getElementById("result").innerHTML = `
+            <div class="result">
+              <h3>Tracking Result</h3>
+              <p><b>Tracking Number:</b> ${data.tracking_number}</p>
+              <p><b>Shipper:</b> ${data.shipper_name}</p>
+              <p><b>Consignee:</b> ${data.consignee_name}</p>
+              <p><b>Status:</b> ${data.status}</p>
+            </div>
+          `;
+        })
+        .catch(() => {
+          document.getElementById("result").innerHTML = `
+            <p class="error">❌ Tracking number not found</p>
+          `;
+        });
+    }
+  </script>
+
+</body>
+</html>
