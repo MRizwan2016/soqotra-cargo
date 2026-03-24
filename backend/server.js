@@ -115,6 +115,29 @@ app.get("/api/track/:trackingNumber", (req, res) => {
 });
 
 /* =========================
+   ADD SHIPMENT
+========================= */
+
+app.post("/api/add-shipment", (req, res) => {
+
+  const { tracking_number, shipper_name, consignee_name, status } = req.body;
+
+  const sql = `
+    INSERT INTO shipments (tracking_number, shipper_name, consignee_name, status)
+    VALUES (?, ?, ?, ?)
+  `;
+
+  db.query(sql, [tracking_number, shipper_name, consignee_name, status], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Error saving shipment" });
+    }
+
+    res.json({ message: "Shipment added successfully ✅" });
+  });
+});
+
+/* =========================
    START SERVER
 ========================= */
 
