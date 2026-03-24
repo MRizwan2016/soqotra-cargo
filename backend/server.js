@@ -93,6 +93,33 @@ app.get("/api/dashboard", (req, res) => {
   });
 });
 
+/* ==========================
+API UPDATE STATUS
+========================== */
+app.put("/api/update-status", (req, res) => {
+
+  const { tracking_number, status } = req.body;
+
+  const sql = `
+    UPDATE shipments
+    SET status = ?
+    WHERE tracking_number = ?
+  `;
+
+  db.query(sql, [status, tracking_number], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Error updating status" });
+    }
+
+    if (result.affectedRows === 0) {
+      return res.json({ message: "Tracking not found ❌" });
+    }
+
+    res.json({ message: "Status updated successfully ✅" });
+  });
+});
+
 /* =========================
    TRACKING API
 ========================= */
