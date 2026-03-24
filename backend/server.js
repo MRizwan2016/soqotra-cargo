@@ -111,9 +111,9 @@ app.get("/api/shipments", (req, res) => {
   });
 
 });
-/* ==========================
-   API UPDATE STATUS
-========================== */
+// ==========================
+//   API UPDATE STATUS
+// ========================== 
 app.put("/api/update-status", (req, res) => {
 
   const { tracking_number, status } = req.body;
