@@ -182,6 +182,26 @@ app.post("/api/add-shipment", (req, res) => {
   });
 });
 
+// ========================
+// DELETE SHIPMENT
+// ========================
+app.delete("/api/delete/:id", (req, res) => {
+
+  const id = req.params.id;
+
+  const sql = "DELETE FROM shipments WHERE id = ?";
+
+  db.query(sql, [id], (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Error deleting shipment" });
+    }
+
+    res.json({ message: "Shipment deleted successfully 🗑️" });
+  });
+
+});
+
 /* =========================
    START SERVER
 ========================= */
