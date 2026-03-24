@@ -118,11 +118,11 @@ app.put("/api/update-status", (req, res) => {
 
   const { tracking_number, status } = req.body;
 
-  const sql = `
-    UPDATE shipments
-    SET status = ?
-    WHERE tracking_number = ?
-  `;
+ const sql = `
+UPDATE shipments
+SET status = ?
+WHERE tracking_number = ?
+`;
 
   db.query(sql, [status, tracking_number], (err, result) => {
     if (err) {
