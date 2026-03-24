@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>All Shipments</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    padding: 30px;
+}
+
+h1 {
+    text-align: center;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    border-bottom: 1px solid #444;
+    text-align: center;
+}
+
+th {
+    background: #1e293b;
+}
+
+tr:hover {
+    background: #334155;
+}
+
+.status {
+    font-weight: bold;
+}
+</style>
+</head>
+
+<body>
+
+<h1>📋 Shipment List</h1>
+
+<table id="shipmentTable">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Tracking No</th>
+            <th>Shipper</th>
+            <th>Consignee</th>
+            <th>Status</th>
+            <th>Date</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+fetch("/api/shipments")
+.then(res => res.json())
+.then(data => {
+
+    const table = document.querySelector("#shipmentTable tbody");
+
+    data.forEach(item => {
+        const row = `
+            <tr>
+                <td>${item.id}</td>
+                <td>${item.tracking_number}</td>
+                <td>${item.shipper_name}</td>
+                <td>${item.consignee_name}</td>
+                <td class="status">${item.status}</td>
+                <td>${new Date(item.created_at).toLocaleString()}</td>
+            </tr>
+        `;
+        table.innerHTML += row;
+    });
+
+})
+.catch(err => {
+    alert("Error loading shipments");
+});
+</script>
+
+</body>
+</html>
