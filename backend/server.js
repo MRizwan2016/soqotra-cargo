@@ -94,7 +94,7 @@ app.get("/api/dashboard", (req, res) => {
 });
 
 /* ==========================
-API UPDATE STATUS
+   API UPDATE STATUS
 ========================== */
 app.put("/api/update-status", (req, res) => {
 
