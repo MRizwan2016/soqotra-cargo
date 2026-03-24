@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>All Shipments</title>
+<title>Shipment List</title>
 
 <style>
 body {
@@ -16,10 +16,17 @@ h1 {
     text-align: center;
 }
 
+#search {
+    padding: 10px;
+    width: 300px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: none;
+}
+
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 20px;
 }
 
 th, td {
@@ -39,12 +46,30 @@ tr:hover {
 .status {
     font-weight: bold;
 }
+
+button {
+    padding: 6px 12px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.delete-btn {
+    background: #ef4444;
+    color: white;
+}
+
+.delete-btn:hover {
+    background: #dc2626;
+}
 </style>
 </head>
 
 <body>
 
 <h1>📋 Shipment List</h1>
+
+<input type="text" id="search" placeholder="Search Tracking Number..." onkeyup="filterTable()">
 
 <table id="shipmentTable">
     <thead>
@@ -55,12 +80,15 @@ tr:hover {
             <th>Consignee</th>
             <th>Status</th>
             <th>Date</th>
+            <th>Action</th>
         </tr>
     </thead>
     <tbody></tbody>
 </table>
 
 <script>
+
+// LOAD DATA
 fetch("/api/shipments")
 .then(res => res.json())
 .then(data => {
@@ -69,14 +97,17 @@ fetch("/api/shipments")
 
     data.forEach(item => {
         const row = `
-            <tr>
-                <td>${item.id}</td>
-                <td>${item.tracking_number}</td>
-                <td>${item.shipper_name}</td>
-                <td>${item.consignee_name}</td>
-                <td class="status">${item.status}</td>
-                <td>${new Date(item.created_at).toLocaleString()}</td>
-            </tr>
+        <tr>
+            <td>${item.id}</td>
+            <td>${item.tracking_number}</td>
+            <td>${item.shipper_name}</td>
+            <td>${item.consignee_name}</td>
+            <td class="status">${item.status}</td>
+            <td>${new Date(item.created_at).toLocaleString()}</td>
+            <td>
+                <button class="delete-btn" onclick="deleteShipment(${item.id})">Delete</button>
+            </td>
+        </tr>
         `;
         table.innerHTML += row;
     });
@@ -85,6 +116,40 @@ fetch("/api/shipments")
 .catch(err => {
     alert("Error loading shipments");
 });
+
+
+// DELETE FUNCTION
+function deleteShipment(id) {
+
+    if (!confirm("Are you sure to delete this shipment?")) return;
+
+    fetch(`/api/delete/${id}`, {
+        method: "DELETE"
+    })
+    .then(res => res.json())
+    .then(data => {
+        alert(data.message);
+        location.reload();
+    })
+    .catch(err => {
+        alert("Error deleting shipment");
+    });
+}
+
+
+// SEARCH FUNCTION
+function filterTable() {
+
+    const input = document.getElementById("search").value.toUpperCase();
+    const rows = document.querySelectorAll("#shipmentTable tbody tr");
+
+    rows.forEach(row => {
+        const tracking = row.cells[1].innerText.toUpperCase();
+        row.style.display = tracking.includes(input) ? "" : "none";
+    });
+
+}
+
 </script>
 
 </body>
