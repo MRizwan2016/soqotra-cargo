@@ -93,6 +93,24 @@ app.get("/api/dashboard", (req, res) => {
   });
 });
 
+*/ ========================
+   API SHIPMENTS
+======================== */
+      
+app.get("/api/shipments", (req, res) => {
+
+  const sql = "SELECT * FROM shipments ORDER BY created_at DESC";
+
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Error fetching shipments" });
+    }
+
+    res.json(results);
+  });
+
+});
 /* ==========================
    API UPDATE STATUS
 ========================== */
