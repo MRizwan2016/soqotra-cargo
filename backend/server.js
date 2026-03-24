@@ -2,22 +2,72 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const mysql = require("mysql2");
 
-// CREATE APP
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-// 📊 DASHBOARD DATA
-// ROOT
-// Serve frontend folder
+/* =========================
+   DATABASE CONNECTION
+========================= */
+
+const db = mysql.createConnection(process.env.DATABASE_URL);
+
+db.connect((err) => {
+  if (err) {
+    console.error("❌ MySQL connection failed:", err);
+  } else {
+    console.log("✅ MySQL Connected");
+  }
+});
+
+/* =========================
+   SERVE FRONTEND FILES
+========================= */
+
+// Serve static files (VERY IMPORTANT)
 app.use(express.static(path.join(__dirname, "../frontend")));
 
-// Load index.html on root
+// Root page
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
-// DASHBOARD API
+
+// Explicit pages (fix for Render issue)
+app.get("/login.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/login.html"));
+});
+
+app.get("/dashboard.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/dashboard.html"));
+});
+
+/* =========================
+   LOGIN API
+========================= */
+
+app.post("/api/login", (req, res) => {
+  const { username, password } = req.body;
+
+  const sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+
+  db.query(sql, [username, password], (err, result) => {
+    if (err) return res.status(500).json(err);
+
+    if (result.length > 0) {
+      res.json({ message: "Login successful" });
+    } else {
+      res.json({ message: "Invalid credentials" });
+    }
+  });
+});
+
+/* =========================
+   DASHBOARD API
+========================= */
+
 app.get("/api/dashboard", (req, res) => {
 
   const sqlTotal = "SELECT COUNT(*) AS total FROM shipments";
@@ -42,7 +92,13 @@ app.get("/api/dashboard", (req, res) => {
     });
   });
 });
+
+/* =========================
+   TRACKING API
+========================= */
+
 app.get("/api/track/:trackingNumber", (req, res) => {
+
   const trackingNumber = req.params.trackingNumber;
 
   const sql = "SELECT * FROM shipments WHERE tracking_number = ?";
@@ -57,158 +113,13 @@ app.get("/api/track/:trackingNumber", (req, res) => {
     res.json(result[0]);
   });
 });
-// DATABASE CONNECTION
-const mysql = require("mysql2");
 
-const db = mysql.createConnection(process.env.DATABASE_URL);
+/* =========================
+   START SERVER
+========================= */
 
-db.connect(err => {
-  if (err) {
-    console.error("DB Connection Error:", err);
-  } else {
-    console.log("Connected to MySQL ✅");
-  }
-});
-
-// CONNECT DB
-db.connect((err) => {
-  if (err) {
-    console.error("❌ DB Connection Failed:", err);
-  } else {
-    console.log("✅ MySQL Connected");
-  }
-});
-
-// TEST API
-app.get("/", (req, res) => {
-  res.send("🚀 Cargo API Running");
-});
-
-
-// ✅ CREATE SHIPMENT
-app.post("/api/shipments", (req, res) => {
-
-  const {
-    invoice_no,
-    shipper_name,
-    consignee_name,
-    origin_country,
-    destination_country,
-    total_weight,
-    total_cbm
-  } = req.body;
-
-  const sql = `
-    INSERT INTO shipments 
-    (invoice_no, shipper_name, consignee_name, origin_country, destination_country, total_weight, total_cbm, status)
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  db.query(sql, [
-    invoice_no,
-    shipper_name,
-    consignee_name,
-    origin_country,
-    destination_country,
-    total_weight,
-    total_cbm,
-    "IN TRANSIT"
-  ], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send("❌ Error inserting data");
-    }
-
-    res.send("✅ Shipment added successfully");
-  });
-
-});
-
-
-// ✅ GET SINGLE SHIPMENT
-app.get("/api/shipments/:invoice_no", (req, res) => {
-
-  const { invoice_no } = req.params;
-
-  const sql = "SELECT * FROM shipments WHERE invoice_no = ?";
-
-  db.query(sql, [invoice_no], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send("❌ Error fetching data");
-    }
-
-    if (result.length === 0) {
-      return res.status(404).send("❌ Shipment not found");
-    }
-
-    res.json(result[0]);
-  });
-
-});
-
-
-// ✅ GET ALL SHIPMENTS
-app.get("/api/shipments", (req, res) => {
-
-  const sql = "SELECT * FROM shipments ORDER BY id DESC";
-
-  db.query(sql, (err, results) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send("❌ Error fetching shipments");
-    }
-
-    res.json(results);
-  });
-
-});
-
-
-// ✅ UPDATE STATUS
-app.put("/api/shipments/:invoice_no", (req, res) => {
-
-  const { invoice_no } = req.params;
-  const { status } = req.body;
-
-  const sql = "UPDATE shipments SET status = ? WHERE invoice_no = ?";
-
-  db.query(sql, [status, invoice_no], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send("❌ Error updating status");
-    }
-
-    res.send("✅ Status updated successfully");
-  });
-
-});
-
-// 🔐 LOGIN API
-app.post("/api/login", (req, res) => {
-
-  const { username, password } = req.body;
-
-  const sql = "SELECT * FROM users WHERE username = ? AND password = ?";
-
-  db.query(sql, [username, password], (err, result) => {
-    if (err) {
-      console.error(err);
-      return res.status(500).send("Error");
-    }
-
-    if (result.length === 0) {
-      return res.status(401).send("Invalid credentials");
-    }
-
-    res.json({ message: "Login successful" });
-  });
-
-});
-
-// START SERVER
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT}`);
 });
