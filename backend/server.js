@@ -9,6 +9,31 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ==============================
+// DASHBOARD STATS API
+// ==============================
+
+app.get("/api/stats", (req, res) => {
+
+  const sql = `
+    SELECT 
+      COUNT(*) AS total,
+      SUM(CASE WHEN status = 'DELIVERED' THEN 1 ELSE 0 END) AS delivered,
+      SUM(CASE WHEN status = 'IN TRANSIT' THEN 1 ELSE 0 END) AS transit
+    FROM shipments
+  `;
+
+  db.query(sql, (err, result) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).json({ message: "Error loading stats" });
+    }
+
+    res.json(result[0]);
+  });
+
+});
+
 /* =========================
    DATABASE CONNECTION
 ========================= */
