@@ -24,7 +24,7 @@ app.get("/api/logout", (req, res) => {
 // DASHBOARD STATS API
 // ==============================
 
-app.get("/api/stats", (req, res) => {
+app.get("/api/stats", checkAuth, (req, res) => {
 
   const sql = `
     SELECT 
@@ -62,7 +62,7 @@ db.connect((err) => {
 /* =========================
    SERVE FRONTEND FILES
 ========================= */
-
+  
 // Serve static files (VERY IMPORTANT)
 app.use(express.static(path.join(__dirname, "../frontend")));
 
@@ -84,7 +84,7 @@ app.get("/dashboard.html", (req, res) => {
    LOGIN API
 ========================= */
 
-app.post("/api/login", (req, res) => {
+app.get("/api/shipments", checkAuth, (req, res) => {
 
   const { username, password } = req.body;
 
@@ -132,7 +132,7 @@ app.get("/api/dashboard", (req, res) => {
    API SHIPMENTS
 ======================== */
       
-app.get("/api/shipments", (req, res) => {
+app.get("/api/shipments", checkAuth, (req, res) => {
 
   const sql = "SELECT * FROM shipments ORDER BY created_at DESC";
 
@@ -149,7 +149,7 @@ app.get("/api/shipments", (req, res) => {
 // ==========================
 //   API UPDATE STATUS
 // ========================== 
-app.put("/api/update-status", (req, res) => {
+app.put("/api/update-status", checkAuth, (req, res) => {
 
   const { tracking_number, status } = req.body;
 
@@ -228,7 +228,7 @@ app.post("/api/add-shipment", (req, res) => {
 // ========================
 // DELETE SHIPMENT
 // ========================
-app.delete("/api/delete/:id", (req, res) => {
+app.delete("/api/delete/:id", checkAuth, (req, res) => {
 
   const id = req.params.id;
 
