@@ -182,7 +182,9 @@ function checkAuth(req, res, next) {
    TRACKING API
 ========================= */
 
-app.get("/api/track/:trackingNumber", (req, res) => {
+app.get("/track.html", (req, res) => {
+  res.sendFile(path.join(__dirname, "../frontend/track.html"));
+});
 
   const trackingNumber = req.params.trackingNumber;
 
