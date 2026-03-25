@@ -84,14 +84,12 @@ app.get("/dashboard.html", (req, res) => {
    LOGIN API
 ========================= */
 
-app.get("/api/shipments", checkAuth, (req, res) => {
+app.post("/api/login", (req, res) => {
 
   const { username, password } = req.body;
 
   if (username === "admin" && password === "1234") {
-
     req.session.user = username;
-
     return res.json({ success: true });
   }
 
