@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Track Shipment - SOQOTRA</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      background: linear-gradient(to right, #0f2027, #203a43, #2c5364);
+      color: white;
+      text-align: center;
+      padding-top: 100px;
+    }
+
+    h1 {
+      margin-bottom: 20px;
+    }
+
+    input {
+      padding: 10px;
+      width: 250px;
+      border-radius: 5px;
+      border: none;
+    }
+
+    button {
+      padding: 10px 20px;
+      margin-left: 10px;
+      border: none;
+      background: #28a745;
+      color: white;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+
+    button:hover {
+      background: #218838;
+    }
+
+    .result {
+      margin-top: 30px;
+      background: rgba(255,255,255,0.1);
+      padding: 20px;
+      border-radius: 10px;
+      display: inline-block;
+    }
+
+    .error {
+      color: red;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>📦 Track Your Shipment</h1>
+
+  <input type="text" id="tracking" placeholder="Enter Tracking Number">
+  <button onclick="track()">Track</button>
+
+  <div id="result"></div>
+  <div id="error" class="error"></div>
+
+  <script>
+    async function track() {
+      const trackingNumber = document.getElementById("tracking").value;
+
+      document.getElementById("result").innerHTML = "";
+      document.getElementById("error").innerText = "";
+
+      if (!trackingNumber) {
+        document.getElementById("error").innerText = "Please enter tracking number";
+        return;
+      }
+
+      try {
+        const res = await fetch(`/api/track/${trackingNumber}`);
+        const data = await res.json();
+
+        if (res.status !== 200) {
+          document.getElementById("error").innerText = data.message;
+          return;
+        }
+
+        document.getElementById("result").innerHTML = `
+          <div class="result">
+            <h3>Tracking No: ${data.tracking_number}</h3>
+            <p><b>Shipper:</b> ${data.shipper_name}</p>
+            <p><b>Consignee:</b> ${data.consignee_name}</p>
+            <p><b>Status:</b> ${data.status}</p>
+          </div>
+        `;
+
+      } catch (err) {
+        document.getElementById("error").innerText = "Server error";
+      }
+    }
+  </script>
+
+</body>
+</html>
