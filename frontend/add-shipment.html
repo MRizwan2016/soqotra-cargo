@@ -64,18 +64,19 @@ async function saveShipment() {
   const consignee_name = document.getElementById("consignee").value;
   const status = document.getElementById("status").value;
 
-  const res = await fetch("/api/add-shipment", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json"
-    },
-    body: JSON.stringify({
-      tracking_number,
-      shipper_name,
-      consignee_name,
-      status
-    })
-  });
+  fetch("/api/add-shipment", {
+  method: "POST",
+  credentials: "include",
+  headers: {
+    "Content-Type": "application/json"
+  },
+  body: JSON.stringify({
+    tracking_number,
+    shipper_name,
+    consignee_name,
+    status
+  })
+});
 
   const data = await res.json();
 
