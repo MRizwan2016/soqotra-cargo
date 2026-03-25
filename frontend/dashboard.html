@@ -1,27 +1,98 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Dashboard</title>
+<title>Admin Dashboard</title>
+
+<style>
+body {
+    font-family: Arial;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: white;
+    text-align: center;
+    padding: 40px;
+}
+
+h1 {
+    margin-bottom: 20px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    margin-top: 30px;
+}
+
+.card {
+    padding: 20px;
+    border-radius: 10px;
+    width: 200px;
+    font-size: 20px;
+}
+
+.total { background: #3b82f6; }
+.delivered { background: #22c55e; }
+.transit { background: #f59e0b; }
+
+button {
+    margin: 10px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.add { background: #22c55e; color: white; }
+.view { background: #3b82f6; color: white; }
+.logout { background: #ef4444; color: white; }
+
+</style>
 </head>
 
-<body style="background:#0f172a; color:white; text-align:center; padding:50px;">
+<body>
 
-  <h1>📊 Admin Dashboard</h1>
+<h1>📊 Admin Dashboard</h1>
 
-  <p>Welcome to SOQOTRA Admin Panel</p>
+<div class="container">
+    <div class="card total">
+        Total Shipments <br><br>
+        <span id="total">0</span>
+    </div>
 
-  <button onclick="goAdd()">➕ Add Shipment</button>
-  <button onclick="logout()">🚪 Logout</button>
-  <button onclick="window.location.href='add-shipment.html'">➕ Add Shipment</button>
- <button onclick="window.location.href='shipments.html'">📋 View Shipments</button>
-  
-  <script>
- <button onclick="window.location.href='add-shipment.html'">➕ Add Shipment</button>
- <button onclick="window.location.href='update-shipment.html'">✏️ Update Shipment</button>
-    function logout() {
-      window.location.href = "login.html";
-    }
-  </script>
+    <div class="card delivered">
+        Delivered <br><br>
+        <span id="delivered">0</span>
+    </div>
+
+    <div class="card transit">
+        In Transit <br><br>
+        <span id="transit">0</span>
+    </div>
+</div>
+
+<br>
+
+<button class="add" onclick="location.href='add-shipment.html'">➕ Add Shipment</button>
+<button class="view" onclick="location.href='shipments.html'">📋 View Shipments</button>
+<button class="logout" onclick="logout()">🚪 Logout</button>
+
+<script>
+
+// LOAD STATS
+fetch("/api/stats")
+.then(res => res.json())
+.then(data => {
+    document.getElementById("total").innerText = data.total || 0;
+    document.getElementById("delivered").innerText = data.delivered || 0;
+    document.getElementById("transit").innerText = data.transit || 0;
+})
+.catch(() => alert("Error loading stats"));
+
+function logout() {
+    window.location.href = "login.html";
+}
+
+</script>
 
 </body>
 </html>
