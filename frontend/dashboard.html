@@ -89,10 +89,8 @@ fetch("/api/stats")
 .catch(() => alert("Error loading stats"));
 
 function logout() {
+  fetch("/api/logout")
+  .then(() => {
     window.location.href = "login.html";
+  });
 }
-
-</script>
-
-</body>
-</html>
