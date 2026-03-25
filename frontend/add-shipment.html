@@ -58,28 +58,33 @@ button:hover {
 </div>
 
 <script>
-function addShipment() {
-    const data = {
-        tracking_number: document.getElementById("tracking").value,
-        shipper_name: document.getElementById("shipper").value,
-        consignee_name: document.getElementById("consignee").value,
-        status: document.getElementById("status").value
-    };
+async function saveShipment() {
+  const tracking_number = document.getElementById("tracking").value;
+  const shipper_name = document.getElementById("shipper").value;
+  const consignee_name = document.getElementById("consignee").value;
+  const status = document.getElementById("status").value;
 
-    fetch("/api/add-shipment", {
-        method: "POST",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        body: JSON.stringify(data)
+  const res = await fetch("/api/add-shipment", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      tracking_number,
+      shipper_name,
+      consignee_name,
+      status
     })
-    .then(res => res.json())
-    .then(data => {
-        alert(data.message);
-    })
-    .catch(err => {
-        alert("Error saving shipment");
-    });
+  });
+
+  const data = await res.json();
+
+  if (res.status === 200) {
+    alert("Shipment added successfully");
+    window.location.href = "/shipments.html";
+  } else {
+    alert(data.message || "Error saving shipment");
+  }
 }
 </script>
 
