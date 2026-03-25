@@ -178,13 +178,11 @@ function checkAuth(req, res, next) {
   }
 }
 
-/* =========================
-   TRACKING API
-========================= */
+// ======================
+// TRACKING API
+// ======================
 
-app.get("/track.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "../frontend/track.html"));
-});
+app.get("/api/track/:trackingNumber", (req, res) => {
 
   const trackingNumber = req.params.trackingNumber;
 
@@ -199,6 +197,7 @@ app.get("/track.html", (req, res) => {
 
     res.json(result[0]);
   });
+
 });
 
 /* =========================
