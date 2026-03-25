@@ -204,23 +204,19 @@ app.get("/api/track/:trackingNumber", (req, res) => {
    ADD SHIPMENT
 ========================= */
 
-app.post("/api/add-shipment", (req, res) => {
+app.get("/api/shipments", checkAuth, (req, res) => {
 
-  const { tracking_number, shipper_name, consignee_name, status } = req.body;
+  const sql = "SELECT * FROM shipments ORDER BY created_at DESC";
 
-  const sql = `
-    INSERT INTO shipments (tracking_number, shipper_name, consignee_name, status)
-    VALUES (?, ?, ?, ?)
-  `;
-
-  db.query(sql, [tracking_number, shipper_name, consignee_name, status], (err, result) => {
+  db.query(sql, (err, results) => {
     if (err) {
       console.error(err);
-      return res.status(500).json({ message: "Error saving shipment" });
+      return res.status(500).json({ message: "Error fetching shipments" });
     }
 
-    res.json({ message: "Shipment added successfully ✅" });
+    res.json(results);
   });
+
 });
 
 // ========================
