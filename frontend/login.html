@@ -61,30 +61,23 @@
   </div>
 
   <script>
-    function login() {
-      const username = document.getElementById("username").value;
-      const password = document.getElementById("password").value;
+  async function login() {
+  const username = document.getElementById("username").value;
+  const password = document.getElementById("password").value;
 
-      fetch("https://soqotra-cargo.onrender.com/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({ username, password })
-      })
-      .then(res => res.json())
-      .then(data => {
-        if (data.message === "Login successful") {
-          window.location.href = "dashboard.html";
-        } else {
-          document.getElementById("msg").innerText = "Invalid login";
-        }
-      })
-      .catch(() => {
-        document.getElementById("msg").innerText = "Error connecting server";
-      });
-    }
-  </script>
+  const res = await fetch("/api/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ username, password })
+  });
 
-</body>
-</html>
+  const data = await res.json();
+
+  if (data.success) {
+    window.location.href = "/dashboard.html";
+  } else {
+    document.getElementById("error").innerText = "Invalid login";
+  }
+}
