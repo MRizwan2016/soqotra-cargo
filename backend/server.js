@@ -85,7 +85,6 @@ app.get("/dashboard.html", (req, res) => {
 ========================= */
 
 app.post("/api/login", (req, res) => {
-
   const { username, password } = req.body;
 
   if (username === "admin" && password === "1234") {
@@ -94,7 +93,6 @@ app.post("/api/login", (req, res) => {
   }
 
   res.status(401).json({ success: false });
-
 });
 
 /* =========================
@@ -144,6 +142,7 @@ app.get("/api/shipments", checkAuth, (req, res) => {
   });
 
 });
+
 // ==========================
 //   API UPDATE STATUS
 // ========================== 
