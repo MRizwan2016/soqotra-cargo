@@ -3,11 +3,22 @@ const express = require("express");
 const cors = require("cors");
 const path = require("path");
 const mysql = require("mysql2");
+const session = require("express-session");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+app.use(session({
+  secret: "soqotra_secret_key",
+  resave: false,
+  saveUninitialized: true
+}));
+
+app.get("/api/logout", (req, res) => {
+  req.session.destroy();
+  res.json({ message: "Logged out" });
+});
 
 // ==============================
 // DASHBOARD STATS API
@@ -74,19 +85,18 @@ app.get("/dashboard.html", (req, res) => {
 ========================= */
 
 app.post("/api/login", (req, res) => {
+
   const { username, password } = req.body;
 
-  const sql = "SELECT * FROM users WHERE username = ? AND password = ?";
+  if (username === "admin" && password === "1234") {
 
-  db.query(sql, [username, password], (err, result) => {
-    if (err) return res.status(500).json(err);
+    req.session.user = username;
 
-    if (result.length > 0) {
-      res.json({ message: "Login successful" });
-    } else {
-      res.json({ message: "Invalid credentials" });
-    }
-  });
+    return res.json({ success: true });
+  }
+
+  res.status(401).json({ success: false });
+
 });
 
 /* =========================
@@ -162,6 +172,14 @@ WHERE tracking_number = ?
     res.json({ message: "Status updated successfully ✅" });
   });
 });
+
+function checkAuth(req, res, next) {
+  if (req.session.user) {
+    next();
+  } else {
+    res.status(401).json({ message: "Unauthorized" });
+  }
+}
 
 /* =========================
    TRACKING API
