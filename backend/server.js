@@ -186,7 +186,7 @@ app.get("/api/track/:trackingNumber", (req, res) => {
 
   const trackingNumber = req.params.trackingNumber;
 
-  const sql = "SELECT * FROM shipments WHERE tracking_number = ?";
+  const sql = "SELECT * FROM shipments WHERE LOWER(tracking_number) = LOWER(?)";
 
   db.query(sql, [trackingNumber], (err, result) => {
     if (err) return res.status(500).send(err);
